@@ -97,6 +97,8 @@ class NakamonstaDetail extends Component {
   }
 
   matingDisplay() {
+    const { user } = this.props;
+
     if (this.state.tokenAuctioned === undefined || !this.state.isOwner) {
       return null;
     }
@@ -114,7 +116,7 @@ class NakamonstaDetail extends Component {
           Mate with
         </Button>
         <FormControlLabel
-          control={<Checkbox />}
+          control={<Checkbox disabled={user?.point <= 0} />}
           style={{ marginTop: 8, marginLeft: 8 }}
           label="Use Points for Mate"
         />
@@ -146,6 +148,7 @@ const mapStateToProps = (state) => {
   return {
     NakamonstaAuction: state.contracts.NakamonstaAuction,
     accounts: state.accounts,
+    user: state.user,
   };
 };
 

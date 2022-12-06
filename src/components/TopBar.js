@@ -6,6 +6,7 @@ import { withStyles } from "@material-ui/core/styles";
 import React, { Component } from "react";
 import SignUpOrProfileButton from "./SignUpOrProfileButton";
 import { Typography } from "@material-ui/core";
+import { drizzleConnect } from "@drizzle/react-plugin";
 
 const styles = (theme) => ({
   appBar: {
@@ -21,7 +22,7 @@ const styles = (theme) => ({
 
 class TopBar extends Component {
   render() {
-    const { classes } = this.props;
+    const { classes, user } = this.props;
 
     return (
       <AppBar position="static" className={classes.appBar}>
@@ -30,7 +31,7 @@ class TopBar extends Component {
             Home
           </Button>
           <span className={classes.grow} />
-          <Typography>Earned Points: 0</Typography>
+          <Typography>Earned Points: {user?.point || -1}</Typography>
           <Button color="inherit" component={Link} to="/market/">
             Market Place
           </Button>
@@ -44,4 +45,10 @@ class TopBar extends Component {
   }
 }
 
-export default withStyles(styles)(TopBar);
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+  };
+};
+
+export default withStyles(styles)(drizzleConnect(TopBar, mapStateToProps));

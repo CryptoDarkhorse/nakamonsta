@@ -46,6 +46,8 @@ class BuyAuctionButton extends Component {
   }
 
   render() {
+    const { user } = this.props;
+
     return (
       <div>
         <Button
@@ -61,7 +63,7 @@ class BuyAuctionButton extends Component {
           <CircularProgress variant="indeterminate" color="secondary" />
         ) : null}
         <FormControlLabel
-          control={<Checkbox />}
+          control={<Checkbox disabled={user?.point <= 0} />}
           style={{ marginTop: 8, marginLeft: 8 }}
           label="Use Points for Auction"
         />
@@ -77,6 +79,7 @@ BuyAuctionButton.contextTypes = {
 const mapStateToProps = (state) => {
   return {
     contracts: state.contracts,
+    user: state.user,
   };
 };
 
