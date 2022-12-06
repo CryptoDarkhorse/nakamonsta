@@ -3,6 +3,7 @@ import { drizzleConnect } from "@drizzle/react-plugin";
 import PropTypes from "prop-types";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
+import { Checkbox, FormControlLabel } from "@material-ui/core";
 import { Link, useParams, useLocation } from "react-router-dom";
 import NakamonstaCard from "../../components/nakamonstas/NakamonstaCard";
 import CreateAuction from "../../components/auction/CreateAuction";
@@ -47,26 +48,32 @@ class NakamonstaDetail extends Component {
       (forceValue || this.state.isOwner === undefined)
     ) {
       const owner = this.props.NakamonstaAuction.ownerOf[this.ownerOfKey].value;
-      this.setState(state => {
+      this.setState((state) => {
         return { ...state, isOwner: this.props.accounts[0] === owner };
       });
     }
     if (
-      this.isTokenAuctionedKey in this.props.NakamonstaAuction.isTokenAuctioned &&
+      this.isTokenAuctionedKey in
+        this.props.NakamonstaAuction.isTokenAuctioned &&
       (forceValue || this.state.tokenAuctioned === undefined)
     ) {
-      const b = this.props.NakamonstaAuction.isTokenAuctioned[this.isTokenAuctionedKey].value;
-      this.setState(state => {
+      const b = this.props.NakamonstaAuction.isTokenAuctioned[
+        this.isTokenAuctionedKey
+      ].value;
+      this.setState((state) => {
         return {
           ...state,
-          tokenAuctioned: b
+          tokenAuctioned: b,
         };
       });
     }
   }
 
   auctionDisplay() {
-    if (this.state.isOwner === undefined || this.state.tokenAuctioned === undefined) {
+    if (
+      this.state.isOwner === undefined ||
+      this.state.tokenAuctioned === undefined
+    ) {
       return null;
     }
     return (
@@ -106,6 +113,11 @@ class NakamonstaDetail extends Component {
         >
           Mate with
         </Button>
+        <FormControlLabel
+          control={<Checkbox />}
+          style={{ marginTop: 8, marginLeft: 8 }}
+          label="Use Points for Mate"
+        />
       </div>
     );
   }
@@ -127,23 +139,18 @@ class NakamonstaDetail extends Component {
 }
 
 NakamonstaDetail.contextTypes = {
-  drizzle: PropTypes.object
+  drizzle: PropTypes.object,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     NakamonstaAuction: state.contracts.NakamonstaAuction,
-    accounts: state.accounts
+    accounts: state.accounts,
   };
 };
 
 // export default drizzleConnect(NakamonstaDetail, mapStateToProps);
 
-const Page =  (props) => (
-  <NakamonstaDetail
-      {...props}
-      params={useParams()}
-  />
-);
+const Page = (props) => <NakamonstaDetail {...props} params={useParams()} />;
 
-export default drizzleConnect(Page, mapStateToProps)
+export default drizzleConnect(Page, mapStateToProps);

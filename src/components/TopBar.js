@@ -5,17 +5,18 @@ import { Link } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import React, { Component } from "react";
 import SignUpOrProfileButton from "./SignUpOrProfileButton";
+import { Typography } from "@material-ui/core";
 
-const styles = theme => ({
+const styles = (theme) => ({
   appBar: {
-    position: "relative"
+    position: "relative",
   },
   grow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   icon: {
-    marginRight: theme.spacing(2)
-  }
+    marginRight: theme.spacing(2),
+  },
 });
 
 class TopBar extends Component {
@@ -29,6 +30,7 @@ class TopBar extends Component {
             Home
           </Button>
           <span className={classes.grow} />
+          <Typography>Earned Points: 0</Typography>
           <Button color="inherit" component={Link} to="/market/">
             Market Place
           </Button>

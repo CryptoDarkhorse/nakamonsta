@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { Checkbox, FormControlLabel } from "@material-ui/core";
 
 class BuyAuctionButton extends Component {
   constructor(props, context) {
@@ -11,20 +12,23 @@ class BuyAuctionButton extends Component {
     this.NakamonstaAuction = context.drizzle.contracts.NakamonstaAuction;
     this.drizzle = context.drizzle;
     this.state = {
-      buying: undefined
+      buying: undefined,
     };
   }
 
   handleSubmit() {
-    this.setState(state => {
+    this.setState((state) => {
       return {
         ...state,
-        buying: true
+        buying: true,
       };
     });
-    this.stackId = this.NakamonstaAuction.methods.bidOnAuction.cacheSend(this.props.nakamonstaId, {
-      value: this.props.price
-    });
+    this.stackId = this.NakamonstaAuction.methods.bidOnAuction.cacheSend(
+      this.props.nakamonstaId,
+      {
+        value: this.props.price,
+      }
+    );
   }
 
   checkTransactionStatus() {
@@ -53,19 +57,26 @@ class BuyAuctionButton extends Component {
         >
           Buy Now!
         </Button>
-        {this.state.buying ? <CircularProgress variant="indeterminate" color="secondary" /> : null}
+        {this.state.buying ? (
+          <CircularProgress variant="indeterminate" color="secondary" />
+        ) : null}
+        <FormControlLabel
+          control={<Checkbox />}
+          style={{ marginTop: 8, marginLeft: 8 }}
+          label="Use Points for Auction"
+        />
       </div>
     );
   }
 }
 
 BuyAuctionButton.contextTypes = {
-  drizzle: PropTypes.object
+  drizzle: PropTypes.object,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
-    contracts: state.contracts
+    contracts: state.contracts,
   };
 };
 
