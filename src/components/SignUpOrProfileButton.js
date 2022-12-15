@@ -15,14 +15,14 @@ class SignUpOrProfileButton extends Component {
       this.dataKey = this.contracts.Authentication.methods.login.cacheCall();
     }
     this.state = {
-      loginAttempted: false
+      loginAttempted: false,
     };
   }
 
   userLoggedIn(user) {
     return {
       type: USER_LOGGED_IN,
-      payload: user
+      payload: user,
     };
   }
 
@@ -63,13 +63,13 @@ class SignUpOrProfileButton extends Component {
 }
 
 SignUpOrProfileButton.contextTypes = {
-  drizzle: PropTypes.object
+  drizzle: PropTypes.object,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     Authentication: state.contracts.Authentication,
-    user: state.user
+    user: state.user,
   };
 };
 

@@ -115,11 +115,6 @@ class NakamonstaDetail extends Component {
         >
           Mate with
         </Button>
-        <FormControlLabel
-          control={<Checkbox disabled={user?.point <= 0} />}
-          style={{ marginTop: 8, marginLeft: 8 }}
-          label="Use Points for Mate"
-        />
       </div>
     );
   }

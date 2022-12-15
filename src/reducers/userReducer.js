@@ -1,6 +1,7 @@
 const initialState = {
   data: null,
-  point: 5,
+  point: 0,
+  pointFactor: 0,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -19,6 +20,12 @@ const userReducer = (state = initialState, action) => {
   if (action.type === "USER_SET_POINT") {
     return Object.assign({}, state, {
       point: action.payload,
+    });
+  }
+
+  if (action.type === "USER_SET_POINT_FACTOR") {
+    return Object.assign({}, state, {
+      pointFactor: action.payload,
     });
   }
 

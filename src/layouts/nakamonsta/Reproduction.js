@@ -3,6 +3,7 @@ import { drizzleConnect } from "@drizzle/react-plugin";
 import { useParams } from "react-router";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
+import { FormControlLabel, Checkbox, TextField } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { utils } from "web3";
 import NakamonstaCard from "../../components/nakamonstas/NakamonstaCard";
@@ -18,7 +19,13 @@ class Reproduction extends Component {
     this.drizzle = context.drizzle;
     this.motherId = this.props.params.motherId;
     this.fatherId = this.props.params.fatherId;
-    this.state = { fatherId: undefined, babyId: undefined, mating: false };
+    this.state = {
+      fatherId: undefined,
+      babyId: undefined,
+      mating: false,
+      point_use: 0,
+      flag: false,
+    };
   }
 
   onClick(event, n) {
@@ -26,18 +33,47 @@ class Reproduction extends Component {
     event.preventDefault();
   }
 
+  handleChange(e) {
+    this.setState({ [e.target.name]: e.target.value });
+  }
+
+  handleCheckboxChange(e) {
+    this.setState({ [e.target.name]: e.target.checked });
+  }
+
   handleSubmit() {
     // TODO: Check inputs
-    this.setState(state => {
+    this.setState((state) => {
       return {
         ...state,
-        mating: true
+        mating: true,
       };
     });
+
     const matingPrice = utils.toWei("0.01", "ether");
-    this.stackId = this.NakamonstaAuction.methods.mate.cacheSend(this.motherId, this.fatherId, {
-      value: matingPrice
-    });
+
+    const max_point = this.props.user?.point || 0;
+    const pointFactor = this.props.user?.pointFactor || 0;
+
+    let point = Math.min(max_point, parseInt(this.state.point_use));
+    let profit = new utils.BN(pointFactor).mul(new utils.BN(point));
+
+    if (!this.state.flag) {
+      point = 0;
+      profit = new utils.BN(0);
+    }
+
+    // console.log(matingPrice);
+    // console.log(profit);
+    // console.log(matingPrice.sub(profit));
+    this.stackId = this.NakamonstaAuction.methods.mate.cacheSend(
+      this.motherId,
+      this.fatherId,
+      point,
+      {
+        value: matingPrice - point * pointFactor,
+      }
+    );
   }
 
   fatherOrPicker() {
@@ -70,8 +106,10 @@ class Reproduction extends Component {
         state.transactions[txHash].receipt &&
         "NakamonstaBirth" in state.transactions[txHash].receipt.events
       ) {
-        const babyId = state.transactions[txHash].receipt.events.NakamonstaBirth.returnValues[0];
-        this.setState(state => {
+        const babyId =
+          state.transactions[txHash].receipt.events.NakamonstaBirth
+            .returnValues[0];
+        this.setState((state) => {
           return { ...state, babyId: babyId };
         });
       }
@@ -83,19 +121,44 @@ class Reproduction extends Component {
   }
 
   displayActionButtonOrBaby() {
+    const { user } = this.props;
     if (this.state.babyId === undefined) {
       return (
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          margin="normal"
-          style={{ marginTop: "40px" }}
-          disabled={this.fatherId === undefined || this.motherId === undefined}
-          onClick={this.handleSubmit.bind(this)}
-        >
-          Give them some privacy (brrr)!
-        </Button>
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            margin="normal"
+            style={{ marginTop: "40px" }}
+            disabled={
+              this.fatherId === undefined || this.motherId === undefined
+            }
+            onClick={this.handleSubmit.bind(this)}
+          >
+            Give them some privacy (brrr)!
+          </Button>
+          <div>
+            <TextField
+              name="point_use"
+              value={this.state.point_use}
+              onChange={this.handleChange.bind(this)}
+              disabled={!this.state.flag}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="flag"
+                  disabled={user?.point <= 0}
+                  checked={this.state.flag}
+                  onClick={this.handleCheckboxChange.bind(this)}
+                />
+              }
+              style={{ marginTop: 8, marginLeft: 8 }}
+              label="Use Points for Auction"
+            />
+          </div>
+        </>
       );
     }
     return (
@@ -127,23 +190,19 @@ class Reproduction extends Component {
 }
 
 Reproduction.contextTypes = {
-  drizzle: PropTypes.object
+  drizzle: PropTypes.object,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     NakamonstaAuction: state.contracts.NakamonstaAuction,
-    accounts: state.accounts
+    accounts: state.accounts,
+    user: state.user,
   };
 };
 
 // export default drizzleConnect(Reproduction, mapStateToProps);
 
-const Page =  (props) => (
-  <Reproduction
-      {...props}
-      params={useParams()}
-  />
-);
+const Page = (props) => <Reproduction {...props} params={useParams()} />;
 
-export default drizzleConnect(Page, mapStateToProps)
+export default drizzleConnect(Page, mapStateToProps);
