@@ -53,11 +53,19 @@ contract NakamonstaAuction is NakamonstaMating {
     emit AuctionCreated(_tokenId, _startPrice, _endPrice, _duration);
   }
 
-  function bidOnAuction(uint _tokenId) public payable {
+  function bidOnAuction(uint256 _tokenId, uint256 _point) public payable {
+    require(points[msg.sender] >= _point, "insufficient point");
+
+    points[msg.sender] -= _point;
+
     Auction storage auction = auctionByTokenId[_tokenId];
     require(_auctionExists(auction), "Auction doesn't exist");
     uint currentPrice = _calculateCurrentPrice(auction.startPrice, auction.endPrice,
       auction.startDate, auction.duration, uint128(now));
+      
+    if (currentPrice >= _point * pointFactor) currentPrice -= _point * pointFactor;
+    else currentPrice = 0;
+
     require(msg.value >= currentPrice, "Value must be greater than current price");
     uint remainingAmount = msg.value - currentPrice;
     // Send price amount to the token owner
